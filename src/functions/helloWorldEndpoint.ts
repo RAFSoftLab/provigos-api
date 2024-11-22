@@ -10,6 +10,6 @@ export async function helloWorldEndpoint(request: HttpRequest, context: Invocati
 
 app.http('helloWorldEndpoint', {
     methods: ['GET', 'POST'],
-    authLevel: 'anonymous',
+    authLevel: 'function',
     handler: helloWorldEndpoint
 });
