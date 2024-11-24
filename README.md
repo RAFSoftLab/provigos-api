@@ -7,7 +7,6 @@ Provigos is an open-source project aimed at creating a **personal life dashboard
 
 - [Overview](#overview)
 - [Features](#features)
-- [Architecture](#architecture)
 - [Getting Started](#getting-started)
 - [Development](#development)
 - [Contributing](#contributing)
@@ -34,23 +33,6 @@ This repository contains the **Azure Function App** implementation for Provigos,
 - **Custom Analytics**: Transform raw data into meaningful metrics for Quantified Self analysis.
 - **Extensibility**: Designed for easy addition of new triggers, bindings, and processing workflows.
 
----
-
-## Architecture
-
-Provigos' Azure Function App is part of a broader system architecture that includes:
-
-1. **Data Aggregation Layer**  
-   Azure Functions integrate with third-party APIs using HTTP triggers and timers to fetch data periodically.  
-
-2. **Processing and Transformation**  
-   Data is processed, normalized, and stored using Azure Storage or external databases (e.g., Cosmos DB).  
-
-3. **Visualization and Dashboard**  
-   The processed data is sent to the front-end application for user-friendly visualization.  
-
-![Provigos Architecture](https://via.placeholder.com/800x400)  
-*(Replace with your architecture diagram.)*
 
 ---
 
@@ -84,44 +66,11 @@ Start the Azure Function App locally:
 func start
 ```
 
-### Deployment
-
-Deploy the Function App to Azure using the CLI:
-
-```bash
-func azure functionapp publish <your-function-app-name>
-```
-
----
-
-## Development
-
-### Folder Structure
-
-```plaintext
-src/
-│
-├── functions/
-│   ├── api/
-│   └── triggers/
-│
-├── bindings/
-├── utils/
-└── tests/
-```
-
-### Key Directories
-
-- **functions/**: Contains all Azure Functions (HTTP triggers, Timer triggers, etc.).
-- **bindings/**: Custom bindings for data sources and outputs.
-- **utils/**: Shared utility scripts for data processing.
-- **tests/**: Unit and integration tests.
-
 ---
 
 ## Contributing
 
-We welcome contributions to Provigos! Please read our [CONTRIBUTING.md](CONTRIBUTING.md) to get started.
+We welcome contributions to Provigos!
 
 ### How to Contribute
 
@@ -142,6 +91,6 @@ Feel free to use, modify, and distribute this project as long as proper attribut
 
 ## Contact
 
-For questions or feedback, feel free to open an issue or contact us at [email@example.com](mailto:email@example.com).
+For questions or feedback, feel free to open an issue or contact us at [scrnobrnja3024m@raf.rs](mailto:scrnobrnja3024m@raf.rs) or [mdadasovic4924@raf.rs](mailto:mdadasovic4924@raf.rs).
 
 ---
