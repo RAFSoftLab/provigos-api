@@ -5,7 +5,7 @@ import {
   InvocationContext,
 } from "@azure/functions";
 
-export async function helloWorldEndpoint(
+export async function user(
   request: HttpRequest,
   context: InvocationContext
 ): Promise<HttpResponseInit> {
@@ -16,8 +16,8 @@ export async function helloWorldEndpoint(
   return { body: `Hello, ${name}!` };
 }
 
-// app.http('helloWorldEndpoint', {
-//     methods: ['GET', 'POST'],
-//     authLevel: 'function',
-//     handler: helloWorldEndpoint
-// });
+app.http("user", {
+  methods: ["GET", "POST"],
+  authLevel: "function",
+  handler: user,
+});
