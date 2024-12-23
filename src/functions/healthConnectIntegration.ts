@@ -5,7 +5,9 @@ import {
   HttpResponseInit,
   InvocationContext,
 } from "@azure/functions";
-import { getItems, updateItem } from "./common/db";
+import { createItem, getItems, updateItem } from "./common/db";
+import { verifyToken } from "./common/token";
+import { isMatch } from "date-fns";
 
 type healthValue = {
   id: string;
@@ -17,16 +19,42 @@ type healthValue = {
   };
 };
 
+const validIntegrationFields = [
+  "steps",
+  "weight",
+  "caloriesBurned",
+  "leanBodyMass",
+  "heartRate",
+];
+
+const validateInputBody = (inputBody) => {
+  for (const value of Object.keys(inputBody)) {
+    if (!validIntegrationFields.includes(value)) {
+      throw `Integration Value is not supported: ${value}`;
+    }
+
+    for (const dateValue of Object.keys(inputBody[value])) {
+      if (!isMatch(dateValue, "yyyy-MM-dd")) {
+        throw `${dateValue} date not formated correctly: YYYY-MM-DD`;
+      }
+      if (!Number.isInteger(inputBody[value][dateValue])) {
+        throw `${inputBody[value][dateValue]} is not a number`;
+      }
+    }
+  }
+};
+
 const CONTAINER_NAME = "HealthConnectIntegration";
 
-export async function healthConnectIngetration(
+export async function healthConnectIntegration(
   request: HttpRequest,
   context: InvocationContext
 ): Promise<HttpResponseInit> {
   context.log(`Http function processed request for url "${request.url}"`);
-  const userId = request.query.get("userId");
 
   try {
+    const { userId, username } = verifyToken(request);
+
     if (request.method === "GET") {
       const allUserHealthConnectData = await getItems(CONTAINER_NAME);
       const userData = allUserHealthConnectData.find(
@@ -40,43 +68,49 @@ export async function healthConnectIngetration(
       };
     } else if (request.method === "POST") {
       const allUserHealthConnectData = await getItems(CONTAINER_NAME);
-      const userData = allUserHealthConnectData.find(
+      let userIntegrationData = allUserHealthConnectData.find(
         (userData) => userData.userId === userId
       );
 
-      if (!userData) {
-        throw "No such user found with id: " + userId;
+      if (!userIntegrationData) {
+        userIntegrationData = {
+          userId: userId,
+          values: {},
+        };
+        createItem(CONTAINER_NAME, userIntegrationData);
       }
-      const oldValues = userData.values;
+      const oldValues = userIntegrationData.values;
 
-      const data = await request.json();
+      const newValues = await request.json();
+      validateInputBody(newValues);
+
+      for (const [key, object] of Object.entries(newValues)) {
+        console.log(key, object);
+        oldValues[key] = {
+          ...oldValues[key],
+          ...newValues[key],
+        };
+      }
 
       const cosmosResponse = await updateItem(CONTAINER_NAME, {
-        ...userData,
-        values: data,
+        ...userIntegrationData,
+        values: newValues,
       });
-      //@ts-ignore
-      // const newValues = Object.entries(data).reduce(
-      //   ([valueType, valueDatePair], acc) => {
-      //     acc[valueType] = {
-      //       ...acc[valueType],
-      //       ...valueDatePair,
-      //     };
-      //     return acc;
-      //   },
-      //   oldValues
-      // );
-      // console.log(newValues);
-      return cosmosResponse;
+      return {
+        jsonBody: "Updated integration data",
+      };
     }
   } catch (error) {
     context.log(error);
-    return error;
+    return {
+      status: 500,
+      jsonBody: error,
+    };
   }
 }
 
-app.http("healthConnectIngetration", {
+app.http("healthConnectIntegration", {
   methods: ["GET", "POST"],
-  authLevel: "function",
-  handler: healthConnectIngetration,
+  authLevel: "anonymous",
+  handler: healthConnectIntegration,
 });
