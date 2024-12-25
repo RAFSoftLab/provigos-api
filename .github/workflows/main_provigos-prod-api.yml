@@ -10,7 +10,6 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_FUNCTIONAPP_NAME: 'provigos-prod-api'   # set this to your function app name on Azure
   AZURE_FUNCTIONAPP_PACKAGE_PATH: '.' # set this to the path to your web app project, defaults to the repository root
   NODE_VERSION: '20.x' # set this to the node version to use (supports 8.x, 10.x, 12.x)
 
@@ -57,9 +56,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_B8812EAE299B4AB18FC07D8FBD0C853D }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_49BF85DDE6544A789B410F1998940096 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_666082D8F7E44C2B82F5168847A85F18 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_1D486EAD8E724F4C89464FBA35F9EF41 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_35B60C3579BA476AA548D6DCA3C4A018 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_88A2F8BBBF664F3EAB936342C1CEE113 }}
 
       - name: 'Run Azure Functions Action'
         uses: Azure/functions-action@v1
