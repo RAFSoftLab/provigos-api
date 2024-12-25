@@ -42,6 +42,7 @@ const validateInputBody = (inputBody) => {
       }
     }
   }
+  //TODO add validation HTTP errors
 };
 
 const CONTAINER_NAME = "HealthConnectIntegration";
@@ -53,6 +54,7 @@ export async function healthConnectIntegration(
   context.log(`Http function processed request for url "${request.url}"`);
 
   try {
+    //Username not used from token
     const { userId, username } = verifyToken(request);
 
     if (request.method === "GET") {
