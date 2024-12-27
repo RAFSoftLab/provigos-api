@@ -13,6 +13,8 @@ export const verifyToken = (req: HttpRequest) => {
     throw "Missing authorization token";
   }
 
+  //
+
   const decodedToken = jwt.verify(token, jwtSecret);
   console.log(decodedToken);
   const { userId, username } = decodedToken;
