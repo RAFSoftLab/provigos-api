@@ -8,6 +8,8 @@ import {
 import { createItem, getItems, updateItem } from "./common/db";
 import { verifyToken } from "./common/token";
 import { isMatch } from "date-fns";
+import { verifyGoogleToken } from "./common/googleToken";
+import { decryptData, encryptData } from "./common/encryption";
 
 type healthValue = {
   id: string;
@@ -55,48 +57,80 @@ export async function healthConnectIntegration(
 
   try {
     //Username not used from token
-    const { userId, username } = verifyToken(request);
+    const { userId, email } = await verifyGoogleToken(request);
 
     if (request.method === "GET") {
       const allUserHealthConnectData = await getItems(CONTAINER_NAME);
-      const userData = allUserHealthConnectData.find(
-        (userData) => userData.userId === userId
+      const userIntegrationData = allUserHealthConnectData.find(
+        (userData) => userData.email === email
       );
-      if (!userData) {
-        throw "No such user found with id: " + userId;
+      if (!userIntegrationData) {
+        throw "No such user found with email: " + email;
       }
+
+      const decryptedOldValues = JSON.parse(
+        decryptData(
+          {
+            encryptedData: userIntegrationData.values,
+            authTag: userIntegrationData.authTag,
+            iv: userIntegrationData.iv,
+          },
+          userId
+        )
+      );
       return {
-        jsonBody: userData.values,
+        jsonBody: decryptedOldValues,
       };
     } else if (request.method === "POST") {
       const allUserHealthConnectData = await getItems(CONTAINER_NAME);
       let userIntegrationData = allUserHealthConnectData.find(
-        (userData) => userData.userId === userId
+        (userData) => userData.email === email
       );
 
-      if (!userIntegrationData) {
-        userIntegrationData = {
-          userId: userId,
-          values: {},
-        };
-        createItem(CONTAINER_NAME, userIntegrationData);
-      }
-      const oldValues = userIntegrationData.values;
-
-      const newValues = await request.json();
+      const newValues = (await request.json()) as any;
       validateInputBody(newValues);
+
+      if (!userIntegrationData) {
+        const encryptedData = encryptData(JSON.stringify(newValues), userId);
+
+        await updateItem(CONTAINER_NAME, {
+          email: email,
+          values: encryptedData.encryptedData,
+          iv: encryptedData.iv,
+          authTag: encryptedData.authTag,
+        });
+
+        return {
+          jsonBody: "Created integration for email.",
+        };
+      }
+
+      const decryptedOldValues = JSON.parse(
+        decryptData(
+          {
+            encryptedData: userIntegrationData.values,
+            authTag: userIntegrationData.authTag,
+            iv: userIntegrationData.iv,
+          },
+          userId
+        )
+      );
 
       for (const [key, object] of Object.entries(newValues)) {
         console.log(key, object);
-        oldValues[key] = {
-          ...oldValues[key],
+        decryptedOldValues[key] = {
+          ...decryptedOldValues[key],
           ...newValues[key],
         };
       }
 
+      const encryptedData = encryptData(JSON.stringify(newValues), userId);
+
       const cosmosResponse = await updateItem(CONTAINER_NAME, {
         ...userIntegrationData,
-        values: newValues,
+        values: encryptedData.encryptedData,
+        iv: encryptedData.iv,
+        authTag: encryptedData.authTag,
       });
       return {
         jsonBody: "Updated integration data",

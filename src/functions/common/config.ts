@@ -4,4 +4,5 @@ export const {
   cosmosDbName = "",
   jwtSecret = "",
   jwtTimeout = "",
+  googleClientId = "",
 } = process.env;
