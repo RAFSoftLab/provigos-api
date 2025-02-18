@@ -33,7 +33,7 @@ const validIntegrationFields = [
   "height",
   "respiratoryRate",
   "bloodGlucose",
-  "oxygenSaturation"
+   "oxygenSaturation"
 ];
 
 const validateInputBody = (inputBody) => {
@@ -46,9 +46,9 @@ const validateInputBody = (inputBody) => {
       if (!isMatch(dateValue, "yyyy-MM-dd")) {
         throw `${dateValue} date not formated correctly: YYYY-MM-DD`;
       }
-      if (!Number.isInteger(inputBody[value][dateValue])) {
-        throw `${inputBody[value][dateValue]} is not a number`;
-      }
+      // if (!Number.isInteger(inputBody[value][dateValue])) {
+      //   throw `${inputBody[value][dateValue]} is not a number`;
+      // }
     }
   }
   //TODO add validation HTTP errors
