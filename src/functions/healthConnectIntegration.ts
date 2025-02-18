@@ -31,6 +31,9 @@ const validIntegrationFields = [
   "bodyTemperature",
   "bodyFat",
   "height",
+  "respiratoryRate",
+  "bloodGlucose",
+  "oxygenSaturation"
 ];
 
 const validateInputBody = (inputBody) => {
