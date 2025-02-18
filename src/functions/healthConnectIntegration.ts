@@ -27,6 +27,10 @@ const validIntegrationFields = [
   "caloriesBurned",
   "leanBodyMass",
   "heartRate",
+  "bloodPressure",
+  "bodyTemperature",
+  "bodyFat",
+  "height",
 ];
 
 const validateInputBody = (inputBody) => {
