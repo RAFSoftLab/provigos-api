@@ -131,7 +131,7 @@ export async function healthConnectIntegration(
         };
       }
 
-      const encryptedData = encryptData(JSON.stringify(newValues), userId);
+      const encryptedData = encryptData(JSON.stringify(decryptedOldValues), userId);
 
       const cosmosResponse = await updateItem(CONTAINER_NAME, {
         ...userIntegrationData,
