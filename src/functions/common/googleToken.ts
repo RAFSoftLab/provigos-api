@@ -23,8 +23,6 @@ export async function verifyGoogleToken(req) {
     // Extract payload (user info)
     const payload = ticket.getPayload();
 
-    console.log("Token Verified Successfully:", payload);
-
     // Example fields from the payload:
     return {
       userId: payload.sub, // Unique Google user ID
