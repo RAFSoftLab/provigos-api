@@ -39,7 +39,9 @@ export async function customFieldsKeys(
         throw "No such user found with email: " + email;
       }
       return {
-        jsonBody: userData.customFields,
+        jsonBody: {
+          customFields: userData.customFields
+        },
       };
     } else if (request.method === "POST") {
       const allUsers = await getItems(CONTAINER_NAME);
