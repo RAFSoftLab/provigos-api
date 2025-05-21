@@ -33,7 +33,13 @@ const validIntegrationFields = [
   "height",
   "respiratoryRate",
   "bloodGlucose",
-   "oxygenSaturation"
+  "oxygenSaturation",
+  "githubTotal",
+  "githubDaily",
+  "spotifyGenre",
+  "spotifyPopularity",
+  "screenTime",
+  "unlockAttempts",
 ];
 
 const validateInputBody = (inputBody) => {
@@ -131,7 +137,10 @@ export async function healthConnectIntegration(
         };
       }
 
-      const encryptedData = encryptData(JSON.stringify(decryptedOldValues), userId);
+      const encryptedData = encryptData(
+        JSON.stringify(decryptedOldValues),
+        userId
+      );
 
       const cosmosResponse = await updateItem(CONTAINER_NAME, {
         ...userIntegrationData,
