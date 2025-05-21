@@ -1,20 +1,15 @@
-# Koristi zvaničnu sliku za Azure Functions
-FROM mcr.microsoft.com/azure-functions/node:4
+# To enable ssh & remote debugging on app service change the base image to the one below
+# FROM mcr.microsoft.com/azure-functions/node:4-node20-appservice
+FROM mcr.microsoft.com/azure-functions/node:4-node20
 
-# Postavi radni direktorijum u kontejneru
+ENV AzureWebJobsScriptRoot=/home/site/wwwroot \
+    AzureFunctionsJobHost__Logging__Console__IsEnabled=true
+
 WORKDIR /home/site/wwwroot
 
-# Kopiraj package.json i package-lock.json (ako ih imaš) za instalaciju zavisnosti
-COPY package*.json ./
-
-# Instaliraj sve Node.js zavisnosti
+# Copy package.json and install packages before copying the rest of the code to enable caching
+COPY package.json package.json
 RUN npm install
 
-# Kopiraj ostatak aplikacije u kontejner
+# Copy the rest of the code
 COPY . .
-
-# Postavi port za Azure Functions
-EXPOSE 7071
-
-# Pokreni Azure Functions runtime
-CMD [ "npm", "start" ]
